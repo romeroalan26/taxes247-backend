@@ -39,15 +39,18 @@ router.get("/users", async (req, res) => {
 // Obtener datos del usuario por UID
 router.get("/users/:uid", async (req, res) => {
   try {
-    const { uid } = req.params;
-    const user = await User.findOne({ uid });
+    const { uid } = req.params; // Obtener el UID desde la URL
+    console.log("Buscando usuario con UID:", uid); // Log para depuración
+
+    const user = await User.findOne({ uid }); // Buscar en MongoDB
 
     if (user) {
-      res.status(200).json(user);
+      res.status(200).json(user); // Usuario encontrado
     } else {
       res.status(404).json({ message: "Usuario no encontrado" });
     }
   } catch (error) {
+    console.error("Error al obtener usuario:", error);
     res.status(500).json({ message: "Error al obtener el usuario", error });
   }
 });
