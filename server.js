@@ -2,7 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const userRoutes = require("./routes/user.routes"); // Importa las rutas de usuarios
+const userRoutes = require("./routes/user.routes");
+const requestRoutes = require("./routes/request.routes");
 
 dotenv.config();
 
@@ -14,7 +15,8 @@ app.use(cors());
 app.use(express.json());
 
 // Rutas
-app.use("/api", userRoutes); // Prefijo '/api' para todas las rutas de usuarios
+app.use("/api/users", userRoutes); // Prefijo '/api/users' para usuarios
+app.use("/api/requests", requestRoutes); // Prefijo '/api/requests' para solicitudes
 
 // Ruta de prueba
 app.get("/", (req, res) => {
@@ -22,20 +24,16 @@ app.get("/", (req, res) => {
 });
 
 // Conexión a MongoDB
-const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log("MongoDB conectado...");
-  } catch (error) {
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("MongoDB conectado..."))
+  .catch((error) => {
     console.error("Error conectando a MongoDB:", error.message);
     process.exit(1);
-  }
-};
-
-connectDB();
+  });
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
