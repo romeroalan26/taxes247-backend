@@ -10,7 +10,7 @@ router.post("/", async (req, res) => {
     const existingUser = await User.findOne({ uid });
 
     if (existingUser) {
-      return res.status(200).json({ message: "Usuario ya registrado." });
+      return res.status(409).json({ message: "Usuario ya registrado." });
     }
 
     const newUser = new User({ uid, name, email, phone });
