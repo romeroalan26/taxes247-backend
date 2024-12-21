@@ -1,6 +1,7 @@
 const dotenv = require("dotenv");
 dotenv.config();
 const express = require("express");
+const morgan = require("morgan");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
@@ -16,6 +17,7 @@ const PORT = process.env.PORT || 5000;
 // Middlewares
 app.use(cors());
 app.use(express.json());
+app.use(morgan("combined"));
 
 // Rutas
 app.use("/api/users", userRoutes); // Prefijo '/api/users' para usuarios
