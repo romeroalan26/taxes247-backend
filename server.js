@@ -9,7 +9,7 @@ const userRoutes = require("./routes/user.routes");
 const requestRoutes = require("./routes/request.routes");
 
 const app = express();
-const PORT = process.env.PORT || 5000; // Puerto dinámico para Render
+const PORT = process.env.PORT || 4000; // Puerto dinámico para Render
 
 // Middlewares
 app.use(cors()); // Configurar CORS para permitir solicitudes desde el frontend
