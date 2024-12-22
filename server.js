@@ -8,9 +8,6 @@ const cors = require("cors");
 const userRoutes = require("./routes/user.routes");
 const requestRoutes = require("./routes/request.routes");
 
-console.log("EMAIL_USER:", process.env.EMAIL_USER);
-console.log("EMAIL_PASS:", process.env.EMAIL_PASS);
-
 const app = express();
 const PORT = process.env.PORT || 5000; // Puerto dinámico para Render
 
