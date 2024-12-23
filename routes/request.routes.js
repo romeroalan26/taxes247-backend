@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Request = require("../models/Request");
 const nodemailer = require("nodemailer");
+const mongoose = require("mongoose");
 
 // Configurar el transporter de Nodemailer
 const transporter = nodemailer.createTransport({
@@ -62,6 +63,31 @@ router.get("/user/:userId", async (req, res) => {
   } catch (error) {
     console.error("Error al obtener solicitudes:", error);
     res.status(500).json({ message: "Error al obtener solicitudes." });
+  }
+});
+
+// Obtener los detalles de una solicitud por ID
+router.get("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Convertir el ID a ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "ID inválido." });
+    }
+
+    const request = await Request.findById(id);
+
+    if (!request) {
+      return res.status(404).json({ message: "Solicitud no encontrada." });
+    }
+
+    res.status(200).json(request);
+  } catch (error) {
+    console.error("Error al obtener los detalles de la solicitud:", error);
+    res
+      .status(500)
+      .json({ message: "Error al obtener los detalles de la solicitud." });
   }
 });
 
