@@ -31,7 +31,7 @@ const requestSchema = new mongoose.Schema({
   routingNumber: { type: String, required: true },
   address: { type: String, required: true },
   requestType: { type: String, required: true },
-  paymentMethod: { type: String, required: true },
+  paymentMethod: { type: String, required: false },
   status: { type: String, default: "Pendiente" },
   statusHistory: {
     type: [
