@@ -4,6 +4,7 @@ const Request = require("../models/Request");
 const multer = require("multer");
 const s3 = require("../config/awsConfig");
 const nodemailer = require("nodemailer");
+const redisClient = require("../config/cacheConfig");
 
 // Configurar multer para manejar FormData
 const storage = multer.memoryStorage();
@@ -20,15 +21,29 @@ const transporter = nodemailer.createTransport({
 
 // Función para subir archivo a S3
 const uploadToS3 = async (file) => {
-  const params = {
-    Bucket: process.env.AWS_BUCKET_NAME,
-    Key: `${Date.now()}-${file.originalname}`, // Nombre único para el archivo
-    Body: file.buffer,
-    ContentType: file.mimetype,
-  };
+  try {
+    const params = {
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: `${Date.now()}-${file.originalname}`, // Nombre único para el archivo
+      Body: file.buffer,
+      ContentType: file.mimetype,
+    };
 
-  const uploadResult = await s3.upload(params).promise();
-  return uploadResult.Location; // URL del archivo en S3
+    const uploadResult = await s3.upload(params).promise();
+    return uploadResult.Location; // URL del archivo en S3
+  } catch (error) {
+    console.error("Error al subir archivo a S3:", error.message);
+    throw new Error("Error al subir archivo a S3.");
+  }
+};
+
+// Invalidar caché de Redis
+const invalidateCache = async (key) => {
+  try {
+    await redisClient.del(key);
+  } catch (error) {
+    console.error(`Error al invalidar el caché para la clave ${key}:`, error);
+  }
 };
 
 // Endpoint para guardar una solicitud
@@ -36,18 +51,11 @@ router.post("/", upload.array("w2Files", 3), async (req, res) => {
   try {
     const { userId, email, fullName, paymentMethod, ...requestData } = req.body;
 
-    if (!userId) {
-      return res.status(400).json({ message: "El userId es obligatorio." });
-    }
-
-    if (!paymentMethod) {
-      return res.status(400).json({ message: "El método de pago es obligatorio." });
-    }
+    if (!userId) return res.status(400).json({ message: "El userId es obligatorio." });
+    if (!paymentMethod) return res.status(400).json({ message: "El método de pago es obligatorio." });
 
     // Subir archivos a S3
-    const uploadedFiles = await Promise.all(
-      req.files.map((file) => uploadToS3(file))
-    );
+    const uploadedFiles = await Promise.all(req.files.map(uploadToS3));
 
     const newRequest = new Request({
       userId,
@@ -59,6 +67,9 @@ router.post("/", upload.array("w2Files", 3), async (req, res) => {
     });
 
     await newRequest.save();
+
+    // Invalidar el cache
+    await invalidateCache(`requests:${userId}`);
 
     // Enviar correo de confirmación
     const confirmationEmail = {
@@ -81,7 +92,7 @@ router.post("/", upload.array("w2Files", 3), async (req, res) => {
       confirmationNumber: newRequest.confirmationNumber,
     });
   } catch (error) {
-    console.error("Error al guardar la solicitud o enviar el correo:", error);
+    console.error("Error al guardar la solicitud:", error);
     res.status(500).json({
       message: "Error al guardar la solicitud. Intenta de nuevo.",
       error: error.message,
@@ -89,21 +100,20 @@ router.post("/", upload.array("w2Files", 3), async (req, res) => {
   }
 });
 
-// Obtener solicitudes por userId
+// Obtener solicitudes por userId (con Redis Cache)
 router.get("/user/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
 
-    if (!userId) {
-      return res.status(400).json({ message: "El userId es obligatorio." });
-    }
+    if (!userId) return res.status(400).json({ message: "El userId es obligatorio." });
+
+    const cachedRequests = await redisClient.get(`requests:${userId}`);
+    if (cachedRequests) return res.status(200).json(JSON.parse(cachedRequests));
 
     const requests = await Request.find({ userId });
+    if (!requests.length) return res.status(404).json({ message: "No se encontraron solicitudes." });
 
-    if (!requests.length) {
-      return res.status(404).json({ message: "No se encontraron solicitudes." });
-    }
-
+    await redisClient.setEx(`requests:${userId}`, 1800, JSON.stringify(requests)); // 30 minutos
     res.status(200).json(requests);
   } catch (error) {
     console.error("Error al obtener solicitudes:", error);
@@ -111,16 +121,18 @@ router.get("/user/:userId", async (req, res) => {
   }
 });
 
-// Obtener detalles de una solicitud específica
+// Obtener detalles de una solicitud específica (con Redis Cache)
 router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    const request = await Request.findById(id);
-    if (!request) {
-      return res.status(404).json({ message: "Solicitud no encontrada." });
-    }
+    const cachedRequest = await redisClient.get(`request:${id}`);
+    if (cachedRequest) return res.status(200).json(JSON.parse(cachedRequest));
 
+    const request = await Request.findById(id);
+    if (!request) return res.status(404).json({ message: "Solicitud no encontrada." });
+
+    await redisClient.setEx(`request:${id}`, 1800, JSON.stringify(request)); // 30 minutos
     res.status(200).json(request);
   } catch (error) {
     console.error("Error al obtener los detalles de la solicitud:", error);
