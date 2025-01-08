@@ -105,15 +105,24 @@ router.get("/user/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
 
-    if (!userId) return res.status(400).json({ message: "El userId es obligatorio." });
+    if (!userId) {
+      return res.status(400).json({ message: "El userId es obligatorio." });
+    }
 
     const cachedRequests = await redisClient.get(`requests:${userId}`);
-    if (cachedRequests) return res.status(200).json(JSON.parse(cachedRequests));
+    if (cachedRequests) {
+      return res.status(200).json(JSON.parse(cachedRequests));
+    }
 
     const requests = await Request.find({ userId });
-    if (!requests.length) return res.status(404).json({ message: "No se encontraron solicitudes." });
+    
+    // Si no hay solicitudes, devolver array vacío con status 200
+    if (!requests.length) {
+      await redisClient.setEx(`requests:${userId}`, 1800, JSON.stringify([]));
+      return res.status(200).json([]);
+    }
 
-    await redisClient.setEx(`requests:${userId}`, 1800, JSON.stringify(requests)); // 30 minutos
+    await redisClient.setEx(`requests:${userId}`, 1800, JSON.stringify(requests));
     res.status(200).json(requests);
   } catch (error) {
     console.error("Error al obtener solicitudes:", error);

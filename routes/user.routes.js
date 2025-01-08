@@ -5,26 +5,60 @@ const nodemailer = require("nodemailer");
 
 const router = express.Router();
 
+// Configurar el transporter de Nodemailer
+const transporter = nodemailer.createTransport({
+  service: "Gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
 // Login del usuario
 router.post("/login", async (req, res) => {
-  const { email } = req.body;
+  const { email, isGoogleLogin, uid, name } = req.body;
 
   try {
-    // Verificar si el usuario existe
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ message: "Usuario no encontrado." });
-    }
-
-    // Verificar si el usuario está activado
-    if (!user.isActivated) {
-      return res.status(403).json({
-        message:
-          "Tu cuenta no está activada. Por favor, verifica tu correo para activarla.",
+    // Primero buscamos por email
+    let user = await User.findOne({ email });
+    
+    if (!user && isGoogleLogin) {
+      // Si es un nuevo usuario de Google, lo creamos
+      user = new User({
+        email,
+        name: name || "Usuario",
+        isGoogleUser: true,
+        isActivated: true,
+        uid: uid,  // Usamos el uid proporcionado por Google
+        activationToken: null
+      });
+      await user.save({ validateBeforeSave: false }); // Usamos la misma estrategia que en register
+    } 
+    else if (!user) {
+      return res.status(404).json({ 
+        message: "Usuario no encontrado. Por favor, regístrate primero." 
       });
     }
 
-    // Si todo está bien, responder con éxito
+    // Si el usuario existe y es un login con Google
+    if (isGoogleLogin && user) {
+      user.isActivated = true;
+      user.isGoogleUser = true;
+      
+      // Actualizamos el uid si no tiene uno
+      if (!user.uid && uid) {
+        user.uid = uid;
+        await user.save({ validateBeforeSave: false });
+      }
+    } 
+    // Si no es Google login, verificamos activación
+    else if (!user.isActivated) {
+      return res.status(403).json({
+        message: "Tu cuenta aún no está activada. Por favor, revisa tu correo y sigue el enlace de activación."
+      });
+    }
+
+    // Respuesta exitosa
     res.status(200).json({
       message: "Inicio de sesión exitoso.",
       user: {
@@ -36,46 +70,50 @@ router.post("/login", async (req, res) => {
     });
   } catch (error) {
     console.error("Error al iniciar sesión:", error);
-    res.status(500).json({ message: "Error en el servidor." });
+    
+    // Manejo específico de errores comunes
+    if (error.code === 11000) {
+      return res.status(409).json({ 
+        message: "Error de duplicación. Por favor, contacta al soporte." 
+      });
+    }
+    
+    res.status(500).json({ 
+      message: "Error en el servidor. Por favor, inténtalo más tarde." 
+    });
   }
 });
 
-// Configurar el transporter de Nodemailer
-const transporter = nodemailer.createTransport({
-  service: "Gmail", // Puedes cambiar el servicio si no usas Gmail
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
-
-// Guardar usuario en MongoDB y enviar correo de activación
-router.post("/", async (req, res) => {
-  const { uid, name, email, phone } = req.body;
+// Registro de usuario
+router.post("/register", async (req, res) => {
+  const { name, email, phone, uid } = req.body;
 
   try {
-    // Verificar si el usuario ya existe
+    // 1. Verificar si el usuario ya existe
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(409).json({ message: "Usuario ya registrado." });
     }
 
-    // Generar token de activación
+    // 2. Generar token de activación
     const activationToken = jwt.sign({ email }, process.env.JWT_SECRET, {
-      expiresIn: "1d", // Expira en 1 día
+      expiresIn: "1d",
     });
 
-    // Crear un nuevo usuario
+    // 3. Crear usuario con el uid de Firebase
     const newUser = new User({
-      uid,
       name,
       email,
       phone,
+      uid,
       activationToken,
+      isGoogleUser: false,
+      isActivated: false,
     });
-    await newUser.save();
 
-    // Enviar correo de activación
+    await newUser.save({ validateBeforeSave: false });
+
+    // 4. Enviar correo de activación
     const activationLink = `${process.env.FRONTEND_URL}/activate/${activationToken}`;
     await transporter.sendMail({
       from: `"Taxes247" <${process.env.EMAIL_USER}>`,
@@ -85,16 +123,58 @@ router.post("/", async (req, res) => {
         <p>Hola ${name},</p>
         <p>Gracias por registrarte en Taxes247. Por favor, activa tu cuenta haciendo clic en el siguiente enlace:</p>
         <a href="${activationLink}" target="_blank">${activationLink}</a>
+        <p>Este enlace expirará en 24 horas.</p>
         <p>Si no fuiste tú quien creó esta cuenta, puedes ignorar este mensaje.</p>
       `,
     });
 
     res.status(201).json({
-      message: "Usuario registrado. Se ha enviado un correo de activación.",
+      message: "Usuario pre-registrado exitosamente. Se ha enviado un correo de activación.",
     });
   } catch (error) {
     console.error("Error al registrar usuario:", error);
-    res.status(500).json({ message: "Error al registrar usuario.", error });
+    res.status(400).json({ 
+      message: "Error al registrar usuario. Por favor, inténtalo de nuevo." 
+    });
+  }
+});
+
+// Actualizar UID después de crear usuario en Firebase
+router.post("/update-uid", async (req, res) => {
+  const { email, uid } = req.body;
+
+  try {
+    // Buscar usuario por email y actualizar SOLO su uid
+    const user = await User.findOneAndUpdate(
+      { email },
+      { uid },  // Solo actualizamos el uid, manteniendo el estado de activación original
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado." });
+    }
+
+    res.status(200).json({ 
+      message: "UID actualizado correctamente.",
+      user: {
+        uid: user.uid,
+        name: user.name,
+        email: user.email,
+        isActivated: user.isActivated  // Incluimos el estado de activación en la respuesta
+      }
+    });
+  } catch (error) {
+    console.error("Error al actualizar UID:", error);
+    if (error.code === 11000) {
+      return res.status(409).json({ 
+        message: "Este UID ya está en uso." 
+      });
+    }
+    res.status(500).json({ 
+      message: "Error al actualizar UID.", 
+      error: error.message 
+    });
   }
 });
 
@@ -109,7 +189,11 @@ router.get("/activate/:token", async (req, res) => {
     // Actualizar el usuario como activado
     const user = await User.findOneAndUpdate(
       { email: decoded.email },
-      { isActivated: true, activationToken: null },
+      { 
+        isActivated: true, 
+        activationToken: null,
+        uid: decoded.email  // Usamos el email como uid para usuarios normales
+      },
       { new: true }
     );
 
@@ -135,8 +219,7 @@ router.get("/:uid", async (req, res) => {
     }
     if (!user.isActivated) {
       return res.status(403).json({
-        message:
-          "Tu cuenta no está activada. Por favor, verifica tu correo para activarla.",
+        message: "Tu cuenta no está activada. Por favor, verifica tu correo para activarla.",
       });
     }
 
