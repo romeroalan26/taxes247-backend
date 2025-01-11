@@ -2,7 +2,7 @@ const express = require("express");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
-
+const verifyToken = require("../middlewares/verifyToken");
 const router = express.Router();
 
 // Configurar el transporter de Nodemailer
@@ -139,7 +139,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// Actualizar UID después de crear usuario en Firebase
+/*// Actualizar UID después de crear usuario en Firebase
 router.post("/update-uid", async (req, res) => {
   const { email, uid } = req.body;
 
@@ -176,7 +176,7 @@ router.post("/update-uid", async (req, res) => {
       error: error.message 
     });
   }
-});
+});*/
 
 // Activar la cuenta del usuario
 router.get("/activate/:token", async (req, res) => {
@@ -209,7 +209,7 @@ router.get("/activate/:token", async (req, res) => {
 });
 
 // Obtener datos del usuario por UID
-router.get("/:uid", async (req, res) => {
+router.get("/:uid", verifyToken, async (req, res) => {
   const { uid } = req.params;
 
   try {
