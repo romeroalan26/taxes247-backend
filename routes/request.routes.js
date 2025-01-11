@@ -5,6 +5,8 @@ const multer = require("multer");
 const s3 = require("../config/awsConfig");
 const nodemailer = require("nodemailer");
 const redisClient = require("../config/cacheConfig");
+const verifyToken = require("../middlewares/verifyToken");
+
 
 // Configurar multer para manejar FormData
 const storage = multer.memoryStorage();
@@ -47,7 +49,7 @@ const invalidateCache = async (key) => {
 };
 
 // Endpoint para guardar una solicitud
-router.post("/", upload.array("w2Files", 3), async (req, res) => {
+router.post("/",verifyToken, upload.array("w2Files", 3), async (req, res) => {
   try {
     const { userId, email, fullName, paymentMethod, ...requestData } = req.body;
 
@@ -101,7 +103,7 @@ router.post("/", upload.array("w2Files", 3), async (req, res) => {
 });
 
 // Obtener solicitudes por userId (con Redis Cache)
-router.get("/user/:userId", async (req, res) => {
+router.get("/user/:userId", verifyToken, async (req, res) => {
   try {
     const { userId } = req.params;
 
@@ -131,7 +133,7 @@ router.get("/user/:userId", async (req, res) => {
 });
 
 // Obtener detalles de una solicitud específica (con Redis Cache)
-router.get("/:id", async (req, res) => {
+router.get("/:id", verifyToken, async (req, res) => {
   try {
     const { id } = req.params;
 
