@@ -10,7 +10,13 @@ const verifyToken = require("../middlewares/verifyToken");
 
 // Configurar multer para manejar FormData
 const storage = multer.memoryStorage();
-const upload = multer({ storage });
+const upload = multer({ 
+  storage,
+  limits: {
+    files: 5, // Aumentar límite a 5 archivos
+    fileSize: 10 * 1024 * 1024 // 10MB por archivo
+  }
+});
 
 // Configurar el transporter de Nodemailer
 const transporter = nodemailer.createTransport({
@@ -22,22 +28,84 @@ const transporter = nodemailer.createTransport({
 });
 
 // Función para subir archivo a S3
-const uploadToS3 = async (file) => {
+const uploadToS3 = async (file, confirmationNumber) => {
   try {
     const params = {
       Bucket: process.env.AWS_BUCKET_NAME,
-      Key: `${Date.now()}-${file.originalname}`, // Nombre único para el archivo
+      Key: `${confirmationNumber}-${file.originalname}`, // Usar número de confirmación
       Body: file.buffer,
       ContentType: file.mimetype,
     };
 
     const uploadResult = await s3.upload(params).promise();
-    return uploadResult.Location; // URL del archivo en S3
+    return uploadResult.Location;
   } catch (error) {
     console.error("Error al subir archivo a S3:", error.message);
     throw new Error("Error al subir archivo a S3.");
   }
 };
+
+// Endpoint para guardar una solicitud
+router.post("/", verifyToken, upload.array("w2Files", 5), async (req, res) => {
+  try {
+    const { userId, email, fullName, paymentMethod, ...requestData } = req.body;
+
+    if (!userId) return res.status(400).json({ message: "El userId es obligatorio." });
+    if (!paymentMethod) return res.status(400).json({ message: "El método de pago es obligatorio." });
+
+    // Primero crear la solicitud para tener el número de confirmación
+    const newRequest = new Request({
+      userId,
+      email,
+      fullName,
+      paymentMethod,
+      w2Files: [], // Inicialmente vacío
+      ...requestData,
+    });
+
+    // Guardar la solicitud para generar el número de confirmación
+    await newRequest.save();
+
+    // Ahora subir los archivos usando el número de confirmación
+    const uploadedFiles = await Promise.all(
+      req.files.map(file => uploadToS3(file, newRequest.confirmationNumber))
+    );
+
+    // Actualizar la solicitud con las URLs de los archivos
+    newRequest.w2Files = uploadedFiles;
+    await newRequest.save();
+
+    // Invalidar el cache
+    await invalidateCache(`requests:${userId}`);
+
+    // Enviar correo de confirmación
+    const confirmationEmail = {
+      from: `"Taxes247" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "Confirmación de Solicitud - Taxes247",
+      html: `
+        <p>Hola ${fullName},</p>
+        <p>Hemos recibido tu solicitud exitosamente. A continuación, te proporcionamos tu código de confirmación:</p>
+        <p style="font-size: 18px; font-weight: bold; color: red;">${newRequest.confirmationNumber}</p>
+        <p>Puedes usar este código para dar seguimiento al estado de tu solicitud en nuestra plataforma.</p>
+        <p>Gracias por confiar en Taxes247.</p>
+      `,
+    };
+
+    await transporter.sendMail(confirmationEmail);
+
+    res.status(201).json({
+      message: "Solicitud guardada correctamente y correo enviado.",
+      confirmationNumber: newRequest.confirmationNumber,
+    });
+  } catch (error) {
+    console.error("Error al guardar la solicitud:", error);
+    res.status(500).json({
+      message: "Error al guardar la solicitud. Intenta de nuevo.",
+      error: error.message,
+    });
+  }
+});
 
 // Invalidar caché de Redis
 const invalidateCache = async (key) => {
@@ -49,7 +117,7 @@ const invalidateCache = async (key) => {
 };
 
 // Endpoint para guardar una solicitud
-router.post("/",verifyToken, upload.array("w2Files", 3), async (req, res) => {
+router.post("/",verifyToken, upload.array("w2Files", 5), async (req, res) => {
   try {
     const { userId, email, fullName, paymentMethod, ...requestData } = req.body;
 
