@@ -4,7 +4,7 @@ const express = require("express");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
 const cors = require("cors");
-
+const adminRoutes = require('./routes/admin.routes');
 const userRoutes = require("./routes/user.routes");
 const requestRoutes = require("./routes/request.routes");
 
@@ -17,6 +17,7 @@ app.use(express.json());
 app.use(morgan("combined"));
 
 // Rutas
+app.use("/api/admin", adminRoutes);
 app.use("/api/users", userRoutes); // Prefijo '/api/users' para usuarios
 app.use("/api/requests", requestRoutes); // Prefijo '/api/requests' para solicitudes
 
