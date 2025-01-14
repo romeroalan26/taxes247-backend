@@ -10,27 +10,30 @@
  *   2. Ejecuta: node scripts/fix_missing_descriptions.js
  */
 
-require('dotenv').config();
-const mongoose = require('mongoose');
-const path = require('path');
+require("dotenv").config();
+const mongoose = require("mongoose");
+const path = require("path");
 
 // Reemplaza esta ruta si tu modelo Request está en una ubicación diferente.
-const Request = require(path.join(__dirname, '../models/Request'));
+const Request = require(path.join(__dirname, "../models/Request"));
 
 async function fixMissingDescriptions() {
+  //Log de ejecucion de scripts
+  logger.info(`Migración iniciada para completar descripciones`);
+
   try {
     // Conectar a la base de datos usando la variable de entorno MONGO_URI
     // Si no usas .env, puedes poner aquí tu URI directamente.
     await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
     });
-    console.log('> Conectado a la base de datos');
+    console.log("> Conectado a la base de datos");
 
     // Buscar todos los documentos que tengan al menos un elemento en statusHistory
     // sin la propiedad "description" o con descripción vacía:
     const requests = await Request.find({
-      'statusHistory.description': { $in: [null, undefined, ''] }
+      "statusHistory.description": { $in: [null, undefined, ""] },
     });
 
     console.log(`> Se encontraron ${requests.length} documentos para corregir`);
@@ -41,7 +44,7 @@ async function fixMissingDescriptions() {
       // Revisar cada entrada de statusHistory
       request.statusHistory.forEach((item) => {
         if (!item.description) {
-          item.description = 'Descripción no especificada';
+          item.description = "Descripción no especificada";
           modified = true;
         }
       });
@@ -53,9 +56,15 @@ async function fixMissingDescriptions() {
       }
     }
 
-    console.log('> Migración completada exitosamente');
+    //Log de ejecucion de scripts
+
+    logger.info(
+      `Migración completada: ${requests.length} documentos actualizados`
+    );
+
+    console.log("> Migración completada exitosamente");
   } catch (error) {
-    console.error('> Error en la migración:', error);
+    console.error("> Error en la migración:", error);
   } finally {
     // Cerrar la conexión y terminar el proceso
     await mongoose.connection.close();
