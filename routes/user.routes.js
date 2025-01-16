@@ -67,6 +67,7 @@ router.post("/login", loginLimiter, async (req, res) => {
         isActivated: true,
         uid: uid,
         activationToken: null,
+        role: "user", // asegurarnos que nuevos usuarios Google tengan rol por defecto
       });
       await user.save({ validateBeforeSave: false });
     } else if (!user) {
@@ -100,6 +101,8 @@ router.post("/login", loginLimiter, async (req, res) => {
         name: user.name,
         email: user.email,
         phone: user.phone,
+        role: user.role, // Añadido el role
+        isAdminVerified: user.isAdminVerified, // Añadido isAdminVerified
       },
     });
   } catch (error) {
