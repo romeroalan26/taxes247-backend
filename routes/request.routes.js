@@ -198,27 +198,88 @@ router.get("/user/:userId", verifyToken, getLimiter, async (req, res) => {
   }
 });
 
-// Obtener detalles de una solicitud específica (con Redis Cache y rate limiting)
+// Funciones de utilidad para enmascarar datos sensibles
+const maskSSN = (ssn) => {
+  if (!ssn) return "";
+  // Asumiendo formato XXX-XX-XXXX
+  const parts = ssn.split("-");
+  if (parts.length === 3) {
+    return `***-**-${parts[2]}`;
+  }
+  return ssn.slice(-4).padStart(ssn.length, "*");
+};
+
+const maskAccountNumber = (accountNumber) => {
+  if (!accountNumber) return "";
+  return accountNumber.slice(-4).padStart(accountNumber.length, "*");
+};
+
+const maskRoutingNumber = (routingNumber) => {
+  if (!routingNumber) return "";
+  return routingNumber.slice(-4).padStart(routingNumber.length, "*");
+};
+
 router.get("/:id", verifyToken, getLimiter, async (req, res) => {
+  const { id } = req.params;
+
   try {
-    const { id } = req.params;
-
+    // Verificar cache primero
     const cachedRequest = await redisClient.get(`request:${id}`);
-    if (cachedRequest) return res.status(200).json(JSON.parse(cachedRequest));
+    if (cachedRequest) {
+      const parsedRequest = JSON.parse(cachedRequest);
+      if (parsedRequest.data) {
+        delete parsedRequest.data.adminNotes;
+        delete parsedRequest.data.statusHistory;
+        delete parsedRequest.data.isDeleted;
+        delete parsedRequest.data.__v;
+        delete parsedRequest.data.w2Files;
+      }
+      return res.status(200).json(parsedRequest);
+    }
 
-    const request = await Request.findOne({ _id: id, isDeleted: false }); // Filtrar solo solicitudes activas
+    // Si no está en cache, buscar en la base de datos
+    const request = await Request.findOne(
+      { _id: id, isDeleted: false },
+      {
+        adminNotes: 0,
+        statusHistory: 0,
+        isDeleted: 0,
+        w2Files: 0,
+        __v: 0,
+      }
+    );
 
-    // Log de consulta de detalles de una solicitud
-    logger.info(`Solicitud ${id} consultada por usuario ${req.user.id}`);
+    if (!request) {
+      return res.status(404).json({
+        ok: false,
+        status: 404,
+        message: "Solicitud no encontrada.",
+      });
+    }
 
-    if (!request)
-      return res.status(404).json({ message: "Solicitud no encontrada." });
+    // Enmascarar datos sensibles
+    const requestObj = request.toObject();
+    requestObj.ssn = maskSSN(requestObj.ssn);
+    requestObj.accountNumber = maskAccountNumber(requestObj.accountNumber);
+    requestObj.routingNumber = maskRoutingNumber(requestObj.routingNumber);
 
-    await redisClient.setEx(`request:${id}`, 1800, JSON.stringify(request)); // 30 minutos
-    res.status(200).json(request);
+    const response = {
+      ok: true,
+      status: 200,
+      data: requestObj,
+    };
+
+    // Guardar en cache
+    await redisClient.setEx(`request:${id}`, 1800, JSON.stringify(response));
+
+    res.status(200).json(response);
   } catch (error) {
     logger.error(`Error al obtener detalles de la solicitud ${id}:`, error);
-    res.status(500).json({ message: "Error al obtener los detalles." });
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      message: "Error al obtener los detalles.",
+    });
   }
 });
 
