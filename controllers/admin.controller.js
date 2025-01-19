@@ -65,11 +65,7 @@ const getAllRequests = async (req, res) => {
 const updateRequestStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, comment, description, paymentDate } = req.body; // Agregamos description
-
-    // Log para debug
-    console.log("Request body:", { status, comment, description, paymentDate });
-    console.log("Status Steps:", statusSteps);
+    const { status, comment, paymentDate } = req.body;
 
     const request = await Request.findById(id);
     if (!request) {
@@ -77,8 +73,7 @@ const updateRequestStatus = async (req, res) => {
     }
 
     // Validar que el status sea válido
-    const statusStep = statusSteps.find((s) => s.value === status);
-    if (!statusStep) {
+    if (!statusSteps.find((s) => s.value === status)) {
       return res.status(400).json({ message: "Estado no válido" });
     }
 
@@ -91,20 +86,17 @@ const updateRequestStatus = async (req, res) => {
       request.paymentDate = new Date(paymentDate);
     }
 
-    // Crear entrada del historial
-    const historyEntry = {
+    // Obtener la descripción desde statusSteps
+    const statusStep = statusSteps.find((s) => s.value === status);
+
+    // Agregar al historial con la descripción tomada de statusSteps
+    request.statusHistory.push({
       status,
-      description: description || statusStep.description, // Usamos la descripción del frontend primero
+      description: statusStep?.description || "", // o un string por defecto
       comment,
       date: new Date(),
       updatedBy: req.adminUser._id,
-    };
-
-    // Log para debug
-    console.log("History entry to be added:", historyEntry);
-
-    // Agregar al historial
-    request.statusHistory.push(historyEntry);
+    });
 
     await request.save();
 
@@ -113,7 +105,7 @@ const updateRequestStatus = async (req, res) => {
       await sendStatusUpdateEmail(
         request,
         status,
-        historyEntry.description, // Usamos la misma descripción del historial
+        statusStep?.description || "",
         comment
       );
     } catch (emailError) {
@@ -139,11 +131,7 @@ const updateRequestStatus = async (req, res) => {
     });
   } catch (error) {
     console.error("Error al actualizar estado:", error);
-    logger.error("Error detallado:", error); // Agregamos log adicional para más detalles
-    res.status(500).json({
-      message: "Error al actualizar estado",
-      error: error.message, // Enviamos el mensaje de error para debugging
-    });
+    res.status(500).json({ message: "Error al actualizar estado" });
   }
 };
 
