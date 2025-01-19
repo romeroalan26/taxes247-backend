@@ -8,6 +8,11 @@ const generateConfirmationNumber = () => {
 // Status steps con descripciones
 const statusSteps = [
   {
+    value: "Pendiente",
+    description: "Solicitud pendiente de revisión",
+    countInProgress: true,
+  },
+  {
     value: "Recibido",
     description: "Solicitud recibida",
     countInProgress: true,
