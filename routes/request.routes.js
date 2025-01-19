@@ -3,7 +3,10 @@ const rateLimit = require("express-rate-limit");
 const router = express.Router();
 const Request = require("../models/Request");
 const { statusSteps } = require("../models/Request");
-const { sendNewRequestEmail } = require("../services/emailService");
+const {
+  sendNewRequestEmail,
+  sendAdminNewRequestNotification,
+} = require("../services/emailService");
 const multer = require("multer");
 const s3 = require("../config/awsConfig");
 const nodemailer = require("nodemailer");
@@ -99,6 +102,8 @@ router.post(
         fullName,
         paymentMethod,
         w2Files: [], // Inicialmente vacío
+        status: "Pendiente", // Establecer status inicial
+        statusDescription: "Solicitud pendiente de revisión",
         ...requestData,
       });
 
@@ -114,7 +119,7 @@ router.post(
       newRequest.w2Files = uploadedFiles;
       await newRequest.save();
 
-      //Log de solicitud creada
+      // Log de solicitud creada
       logger.info(
         `Nueva solicitud creada: ${newRequest.confirmationNumber} por usuario ${userId}`
       );
@@ -122,7 +127,7 @@ router.post(
       // Invalidar el cache
       await invalidateCache(`requests:${userId}`);
 
-      // Enviar correo de confirmación usando el servicio de email
+      // Enviar correo de confirmación al usuario
       try {
         await sendNewRequestEmail(newRequest);
       } catch (emailError) {
@@ -130,11 +135,20 @@ router.post(
           `Error al enviar correo de confirmación para solicitud ${newRequest.confirmationNumber}:`,
           emailError
         );
-        // No interrumpimos la operación principal si falla el envío de correo
+      }
+
+      // Enviar notificación por correo al administrador
+      try {
+        await sendAdminNewRequestNotification(newRequest);
+      } catch (adminNotificationError) {
+        logger.error(
+          `Error al enviar notificación de nueva solicitud al administrador para solicitud ${newRequest.confirmationNumber}:`,
+          adminNotificationError
+        );
       }
 
       res.status(201).json({
-        message: "Solicitud guardada correctamente y correo enviado.",
+        message: "Solicitud guardada correctamente y correos enviados.",
         confirmationNumber: newRequest.confirmationNumber,
       });
     } catch (error) {

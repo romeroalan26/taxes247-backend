@@ -1,4 +1,3 @@
-// services/emailService.js
 const nodemailer = require("nodemailer");
 const logger = require("../config/logger");
 
@@ -94,7 +93,61 @@ const sendNewRequestEmail = async (request) => {
   }
 };
 
+const sendAdminNewRequestNotification = async (request) => {
+  try {
+    const emailOptions = {
+      from: `"Taxes247 Notificaciones" <${process.env.EMAIL_USER}>`,
+      to: process.env.ADMIN_NOTIFICATION_EMAIL, // Add this to your .env file
+      subject: `Nueva Solicitud Creada - #${request.confirmationNumber}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2>Notificación de Nueva Solicitud</h2>
+          <p>Se ha creado una nueva solicitud en el sistema de Taxes247.</p>
+          
+          <div style="background-color: #f4f4f4; padding: 15px; border-radius: 5px;">
+            <strong>Detalles de la Solicitud:</strong>
+            <ul>
+              <li><strong>Número de Confirmación:</strong> ${
+                request.confirmationNumber
+              }</li>
+              <li><strong>Nombre Completo:</strong> ${request.fullName}</li>
+              <li><strong>Correo Electrónico:</strong> ${request.email}</li>
+              <li><strong>Método de Pago:</strong> ${request.paymentMethod}</li>
+              <li><strong>Número de Archivos W2:</strong> ${
+                request.w2Files.length
+              }</li>
+              <li><strong>Fecha de Solicitud:</strong> ${new Date().toLocaleString(
+                "es-ES",
+                { timeZone: "America/New_York" }
+              )}</li>
+            </ul>
+          </div>
+          
+          <p>Inicie sesión en el panel de administración para revisar los detalles completos.</p>
+          
+          <hr>
+          <small>Esta es una notificación automática generada por Taxes247.</small>
+        </div>
+      `,
+    };
+
+    // Send the email
+    await transporter.sendMail(emailOptions);
+
+    logger.info(
+      `Notificación de nueva solicitud enviada al administrador para solicitud ${request.confirmationNumber}`
+    );
+  } catch (error) {
+    logger.error(
+      `Error al enviar notificación de nueva solicitud al administrador:`,
+      error
+    );
+    // Optionally, I could implement a retry mechanism or alternative notification method
+  }
+};
+
 module.exports = {
   sendStatusUpdateEmail,
   sendNewRequestEmail,
+  sendAdminNewRequestNotification,
 };
