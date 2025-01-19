@@ -9,7 +9,7 @@ const generateConfirmationNumber = () => {
 const statusSteps = [
   {
     value: "Pendiente",
-    description: "Solicitud pendiente de revisión",
+    description: "Solicitud pendiente de revisión.",
     countInProgress: true,
   },
   {
@@ -19,17 +19,18 @@ const statusSteps = [
   },
   {
     value: "En revisión",
-    description: "Estamos revisando tu documentación",
+    description: "Estamos revisando tu documentación.",
     countInProgress: true,
   },
   {
     value: "Documentación incompleta",
-    description: "Necesitamos documentación adicional",
+    description:
+      "Necesitamos documentación adicional. Favor contactenos via WhatsApp o correo: taxes247.help@gmail.com.",
     countInProgress: false,
   },
   {
     value: "En proceso con el IRS",
-    description: "Tu declaración está siendo procesada por el IRS",
+    description: "Tu declaración está siendo procesada por el IRS.",
     countInProgress: true,
   },
   {
@@ -40,27 +41,29 @@ const statusSteps = [
   },
   {
     value: "Requiere verificación de la IRS",
-    description: "El IRS requiere verificación adicional",
+    description:
+      "El IRS requiere verificación adicional. Favor contactenos via WhatsApp o correo: taxes247.help@gmail.com.",
     countInProgress: false,
   },
   {
     value: "Pago programado",
-    description: "Tu reembolso ha sido programado",
+    description: "Tu reembolso ha sido programado.",
     countInProgress: true,
   },
   {
-    value: "Pendiente de pago",
-    description: "Pendiente pago por servicios",
+    value: "Deposito enviado",
+    description:
+      "Su reembolso ha sido depositado a su cuenta. Favor proceda a pagar por el servicio brindado.",
     countInProgress: true,
   },
   {
     value: "Pago recibido",
-    description: "Pago por servicios recibido",
+    description: "Pago por servicios recibido.",
     countInProgress: true,
   },
   {
     value: "Completada",
-    description: "Reembolso del IRS recibido",
+    description: "Gracias por utilizar nuestros servicios.",
     countInProgress: true,
   },
   {
@@ -70,10 +73,11 @@ const statusSteps = [
   },
   {
     value: "Cancelada",
-    description: "La solicitud ha sido cancelada",
+    description: "La solicitud ha sido cancelada.",
     countInProgress: false,
   },
 ];
+
 const requestSchema = new mongoose.Schema(
   {
     userId: {
