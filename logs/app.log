@@ -290,3 +290,27 @@
 2025-01-19T14:44:00.427Z [INFO]: Usuario taxes247.help@gmail.com inició sesión con Google
 2025-01-19T14:44:17.941Z [INFO]: Correo de notificación enviado para solicitud 472F75
 2025-01-19T14:44:17.941Z [INFO]: Estado de solicitud 678d0fa3fdde5c326db354ae actualizado a 'En revisión' por admin taxes247.help@gmail.com
+2025-01-19T15:17:45.012Z [INFO]: Nota agregada a solicitud 678d0fa3fdde5c326db354ae por admin taxes247.help@gmail.com: "fgfg"
+2025-01-19T15:18:00.966Z [INFO]: Correo de notificación enviado para solicitud 472F75
+2025-01-19T15:18:00.967Z [INFO]: Estado de solicitud 678d0fa3fdde5c326db354ae actualizado a 'Documentación incompleta' por admin taxes247.help@gmail.com
+2025-01-19T15:18:41.096Z [INFO]: Correo de notificación enviado para solicitud ED5A7B
+2025-01-19T15:18:41.097Z [INFO]: Estado de solicitud 678c2ee2c297219db5987013 actualizado a 'Pago programado' por admin taxes247.help@gmail.com
+2025-01-19T15:18:59.537Z [INFO]: Solicitud 678c27bbe62de765ea774f27 marcada como eliminada por admin taxes247.help@gmail.com
+2025-01-19T15:18:59.790Z [INFO]: Solicitud 678c27bbe62de765ea774f27 marcada como eliminada por admin taxes247.help@gmail.com
+2025-01-19T15:40:25.109Z [INFO]: Usuario taxes247.help@gmail.com inició sesión con Google
+2025-01-19T15:40:45.953Z [ERROR]: Error detallado: Request validation failed: statusHistory.0.description: Path `description` is required.
+2025-01-19T16:05:29.303Z [INFO]: Usuario taxes247.help@gmail.com inició sesión con Google
+2025-01-19T16:06:12.738Z [INFO]: Usuario taxes247.help@gmail.com inició sesión con Google
+2025-01-19T16:06:41.448Z [INFO]: Usuario taxes247.help@gmail.com inició sesión con Google
+2025-01-19T16:06:58.798Z [ERROR]: Error detallado: Request validation failed: statusHistory.0.description: Path `description` is required.
+2025-01-19T16:20:28.938Z [INFO]: Usuario taxes247.help@gmail.com inició sesión con Google
+2025-01-19T16:21:31.634Z [INFO]: Usuario taxes247.help@gmail.com inició sesión con Google
+2025-01-19T16:22:48.764Z [INFO]: Usuario taxes247.help@gmail.com inició sesión con Google
+2025-01-19T16:23:01.548Z [INFO]: Correo de notificación enviado para solicitud ED5A7B
+2025-01-19T16:23:01.549Z [INFO]: Estado de solicitud 678c2ee2c297219db5987013 actualizado a 'Pago recibido' por admin taxes247.help@gmail.com
+2025-01-19T16:33:17.800Z [INFO]: Usuario taxes247.help@gmail.com inició sesión con Google
+2025-01-19T16:33:31.053Z [INFO]: Correo de notificación enviado para solicitud 35BBCB
+2025-01-19T16:33:31.054Z [INFO]: Estado de solicitud 678d25e48e9e858680ea40c3 actualizado a 'Aprobada' por admin taxes247.help@gmail.com
+2025-01-19T16:38:39.006Z [INFO]: Nota agregada a solicitud 678d2a628e9e858680ea40f8 por admin taxes247.help@gmail.com: "nota"
+2025-01-19T16:38:53.724Z [INFO]: Correo de notificación enviado para solicitud E1D323
+2025-01-19T16:38:53.724Z [INFO]: Estado de solicitud 678d2a628e9e858680ea40f8 actualizado a 'En revisión' por admin taxes247.help@gmail.com
