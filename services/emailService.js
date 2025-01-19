@@ -19,6 +19,12 @@ const sendStatusUpdateEmail = async (
   comment = ""
 ) => {
   try {
+    // Agregar información adicional si el estado es "Aprobada"
+    if (status === "Aprobada") {
+      statusDescription +=
+        "<br><strong>Nota:</strong> El tiempo estimado para procesar una declaración de impuestos electrónica es de 21 días laborables, aunque puede tardar más debido a factores como verificaciones adicionales por parte del IRS, o la presentación de la declaración durante periodos de alta demanda.";
+    }
+
     const emailOptions = {
       from: `"Taxes247" <${process.env.EMAIL_USER}>`,
       to: request.email,
@@ -45,18 +51,15 @@ const sendStatusUpdateEmail = async (
       `,
     };
 
+    // Enviar el correo usando el transporter configurado
     await transporter.sendMail(emailOptions);
 
-    logger.info(
-      `Correo de notificación enviado para solicitud ${request.confirmationNumber}`
+    console.log(
+      `Correo de actualización de estado enviado exitosamente a ${request.email}`
     );
-    return true;
   } catch (error) {
-    logger.error(
-      `Error al enviar correo de notificación para solicitud ${request.confirmationNumber}:`,
-      error
-    );
-    return false;
+    console.error("Error al enviar correo de actualización de estado:", error);
+    throw new Error("No se pudo enviar el correo de actualización de estado.");
   }
 };
 
