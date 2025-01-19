@@ -3,6 +3,7 @@ const { statusSteps } = require("../models/Request");
 const { deleteFromS3 } = require("../utils/s3");
 const { invalidateCache } = require("../utils/cache");
 const logger = require("../config/logger");
+const { sendStatusUpdateEmail } = require("../services/emailService");
 
 // Obtener todas las solicitudes con filtros
 const getAllRequests = async (req, res) => {
@@ -61,7 +62,6 @@ const getAllRequests = async (req, res) => {
   }
 };
 
-// Actualizar estado de una solicitud
 const updateRequestStatus = async (req, res) => {
   try {
     const { id } = req.params;
@@ -99,6 +99,22 @@ const updateRequestStatus = async (req, res) => {
     });
 
     await request.save();
+
+    // Enviar correo de notificación de actualización de estado
+    try {
+      await sendStatusUpdateEmail(
+        request,
+        status,
+        statusStep?.description || "",
+        comment
+      );
+    } catch (emailError) {
+      logger.error(
+        `Error al enviar correo de notificación para solicitud ${id}:`,
+        emailError
+      );
+      // No interrumpimos la operación si falla el envío de correo
+    }
 
     //Log de estado actualizado
     logger.info(

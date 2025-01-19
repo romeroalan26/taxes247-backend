@@ -7,54 +7,68 @@ const generateConfirmationNumber = () => {
 
 // Status steps con descripciones
 const statusSteps = [
-  { value: "Pendiente", description: "Solicitud pendiente" },
-  { value: "Recibido", description: "Solicitud recibida" }, // Agregado
+  {
+    value: "Recibido",
+    description: "Solicitud recibida",
+    countInProgress: true,
+  },
   {
     value: "En revisión",
     description: "Estamos revisando tu documentación",
+    countInProgress: true,
   },
   {
     value: "Documentación incompleta",
     description: "Necesitamos documentación adicional",
+    countInProgress: false,
   },
   {
     value: "En proceso con el IRS",
     description: "Tu declaración está siendo procesada por el IRS",
+    countInProgress: true,
+  },
+  {
+    value: "Aprobada",
+    description:
+      "Tu declaración ha sido aprobada. Resta esperar a que la IRS termine el proceso. Te enviaremos un correo una vez conozcamos la fecha de deposito de tu reembolso.",
+    countInProgress: true,
   },
   {
     value: "Requiere verificación de la IRS",
     description: "El IRS requiere verificación adicional",
-  },
-  {
-    value: "Aprobada",
-    description: "Tu declaración ha sido aprobada",
+    countInProgress: false,
   },
   {
     value: "Pago programado",
     description: "Tu reembolso ha sido programado",
-  },
-  {
-    value: "Completada",
-    description: "Proceso finalizado exitosamente",
+    countInProgress: true,
   },
   {
     value: "Pendiente de pago",
-    description: "Esperando confirmación de pago",
+    description: "Pendiente pago por servicios",
+    countInProgress: true,
   },
   {
     value: "Pago recibido",
-    description: "Pago confirmado",
+    description: "Pago por servicios recibido",
+    countInProgress: true,
+  },
+  {
+    value: "Completada",
+    description: "Reembolso del IRS recibido",
+    countInProgress: true,
   },
   {
     value: "Rechazada",
     description: "La solicitud ha sido rechazada",
+    countInProgress: false,
   },
   {
     value: "Cancelada",
     description: "La solicitud ha sido cancelada",
+    countInProgress: false,
   },
 ];
-
 const requestSchema = new mongoose.Schema(
   {
     userId: {

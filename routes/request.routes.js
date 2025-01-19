@@ -3,8 +3,7 @@ const rateLimit = require("express-rate-limit");
 const router = express.Router();
 const Request = require("../models/Request");
 const { statusSteps } = require("../models/Request");
-console.log("Status Steps:", statusSteps);
-
+const { sendNewRequestEmail } = require("../services/emailService");
 const multer = require("multer");
 const s3 = require("../config/awsConfig");
 const nodemailer = require("nodemailer");
@@ -69,6 +68,7 @@ const uploadToS3 = async (file, confirmationNumber) => {
 };
 
 // Endpoint para guardar una solicitud (con rate limiting)
+
 router.post(
   "/",
   verifyToken,
@@ -122,21 +122,16 @@ router.post(
       // Invalidar el cache
       await invalidateCache(`requests:${userId}`);
 
-      // Enviar correo de confirmación
-      const confirmationEmail = {
-        from: `"Taxes247" <${process.env.EMAIL_USER}>`,
-        to: email,
-        subject: "Confirmación de Solicitud - Taxes247",
-        html: `
-        <p>Hola ${fullName},</p>
-        <p>Hemos recibido tu solicitud exitosamente. A continuación, te proporcionamos tu código de confirmación:</p>
-        <p style="font-size: 18px; font-weight: bold; color: red;">${newRequest.confirmationNumber}</p>
-        <p>Puedes usar este código para dar seguimiento al estado de tu solicitud en nuestra plataforma.</p>
-        <p>Gracias por confiar en Taxes247.</p>
-      `,
-      };
-
-      await transporter.sendMail(confirmationEmail);
+      // Enviar correo de confirmación usando el servicio de email
+      try {
+        await sendNewRequestEmail(newRequest);
+      } catch (emailError) {
+        logger.error(
+          `Error al enviar correo de confirmación para solicitud ${newRequest.confirmationNumber}:`,
+          emailError
+        );
+        // No interrumpimos la operación principal si falla el envío de correo
+      }
 
       res.status(201).json({
         message: "Solicitud guardada correctamente y correo enviado.",
@@ -170,35 +165,22 @@ router.get("/user/:userId", verifyToken, getLimiter, async (req, res) => {
       return res.status(400).json({ message: "El userId es obligatorio." });
     }
 
-    // Verificar caché
-    const cachedRequests = await redisClient.get(`requests:${userId}`);
-    if (cachedRequests) {
-      return res.status(200).json(JSON.parse(cachedRequests));
-    }
-
     // Consultar solicitudes activas (isDeleted: false)
     const requests = await Request.find({ userId, isDeleted: false });
 
-    // Log de consulta de solicitudes
-    logger.info(`Usuario ${userId} consultó sus solicitudes activas`);
+    // Devolver tanto las solicitudes como los status steps del modelo
+    const responseData = {
+      requests: requests,
+      statusSteps: statusSteps, // Now using the imported statusSteps
+    };
 
-    // Si no hay solicitudes activas, devolver array vacío con status 200
-    if (!requests.length) {
-      await redisClient.setEx(`requests:${userId}`, 1800, JSON.stringify([]));
-      return res.status(200).json([]);
-    }
-
-    // Almacenar en caché las solicitudes activas
-    await redisClient.setEx(
-      `requests:${userId}`,
-      1800, // 30 minutos
-      JSON.stringify(requests)
-    );
-
-    res.status(200).json(requests);
+    res.status(200).json(responseData);
   } catch (error) {
     console.error("Error al obtener solicitudes:", error);
-    res.status(500).json({ message: "Error al obtener las solicitudes." });
+    res.status(500).json({
+      message: "Error al obtener las solicitudes.",
+      error: error.message,
+    });
   }
 });
 
