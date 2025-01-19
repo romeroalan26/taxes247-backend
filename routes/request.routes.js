@@ -2,6 +2,9 @@ const express = require("express");
 const rateLimit = require("express-rate-limit");
 const router = express.Router();
 const Request = require("../models/Request");
+const { statusSteps } = require("../models/Request");
+console.log("Status Steps:", statusSteps);
+
 const multer = require("multer");
 const s3 = require("../config/awsConfig");
 const nodemailer = require("nodemailer");
@@ -73,6 +76,12 @@ router.post(
   upload.array("w2Files", 5),
   async (req, res) => {
     try {
+      // Validar que haya archivos adjuntos
+      if (!Array.isArray(req.files) || req.files.length === 0) {
+        return res
+          .status(400)
+          .json({ message: "Debes subir al menos un archivo W2." });
+      }
       const { userId, email, fullName, paymentMethod, ...requestData } =
         req.body;
 
