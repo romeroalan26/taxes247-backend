@@ -14,6 +14,7 @@ const PORT = process.env.PORT || 4000; // Puerto dinámico para Render
 // Middlewares
 app.use(cors()); // Configurar CORS para permitir solicitudes desde el frontend
 app.use(express.json());
+app.set("trust proxy", true);
 
 // Configurar logs dependiendo del entorno
 if (process.env.NODE_ENV === "production") {
