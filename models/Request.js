@@ -7,6 +7,7 @@ const generateConfirmationNumber = () => {
 
 // Status steps con descripciones
 const statusSteps = [
+  { value: "Pendiente", description: "Solicitud pendiente" },
   { value: "Recibido", description: "Solicitud recibida" }, // Agregado
   {
     value: "En revisión",
