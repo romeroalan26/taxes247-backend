@@ -31,7 +31,7 @@ const sendStatusUpdateEmail = async (
             request.confirmationNumber
           } ha sido actualizado:</p>
           <div style="background-color: #f4f4f4; padding: 15px; border-radius: 5px;">
-            <strong>Nuevo Estado:</strong> ${status}<br>
+            <strong>Nuevo estado:</strong> ${status}<br>
             <strong>Descripción:</strong> ${
               statusDescription || "Sin descripción adicional"
             }
