@@ -354,3 +354,58 @@
 2025-01-19T20:20:53.694Z [INFO]: Nueva solicitud creada: 99B884 por usuario tmy4egviBJZwTSiL39tDEhYSjez2
 2025-01-19T20:20:55.020Z [INFO]: Correo de confirmación enviado para solicitud 99B884
 2025-01-19T20:20:56.886Z [INFO]: Notificación de nueva solicitud enviada al administrador para solicitud 99B884
+2025-01-19T20:30:42.973Z [INFO]: Solicitud 678c28767fc311b7b0dc02a9 consultada por usuario undefined
+2025-01-19T20:31:47.474Z [INFO]: Usuario taxes247.help@gmail.com inició sesión con Google
+2025-01-19T20:31:57.022Z [INFO]: Nota agregada a solicitud 678c28767fc311b7b0dc02a9 por admin taxes247.help@gmail.com: "Nota"
+2025-01-19T20:32:15.617Z [INFO]: Usuario alan.266@hotmail.com inició sesión
+2025-01-19T20:32:21.616Z [INFO]: Solicitud 678c28767fc311b7b0dc02a9 consultada por usuario undefined
+2025-01-19T20:35:41.649Z [INFO]: Usuario alan.266@hotmail.com inició sesión
+2025-01-19T20:41:23.963Z [INFO]: Solicitud 678c26de9c6af9dadb1fac1e consultada por usuario undefined
+2025-01-19T20:41:31.544Z [INFO]: Usuario alan.266@hotmail.com inició sesión
+2025-01-19T20:42:07.215Z [INFO]: Usuario alan.266@hotmail.com inició sesión
+2025-01-19T20:43:33.497Z [INFO]: Usuario alan.266@hotmail.com inició sesión
+2025-01-19T20:44:15.782Z [INFO]: Nueva solicitud creada: 7908FC por usuario tmy4egviBJZwTSiL39tDEhYSjez2
+2025-01-19T20:44:17.847Z [INFO]: Correo de confirmación enviado para solicitud 7908FC
+2025-01-19T20:44:20.340Z [INFO]: Notificación de nueva solicitud enviada al administrador para solicitud 7908FC
+2025-01-19T20:44:25.843Z [INFO]: Solicitud 678d641fc16ef940e47a4585 consultada por usuario undefined
+2025-01-19T20:44:39.784Z [INFO]: Usuario alan.266@hotmail.com inició sesión
+2025-01-19T20:44:57.288Z [INFO]: Usuario taxes247.help@gmail.com inició sesión con Google
+2025-01-19T20:45:05.101Z [INFO]: Nota agregada a solicitud 678d641fc16ef940e47a4585 por admin taxes247.help@gmail.com: "Prueba"
+2025-01-19T20:45:17.186Z [INFO]: Usuario alan.266@hotmail.com inició sesión
+2025-01-19T20:45:18.639Z [INFO]: Solicitud 678d641fc16ef940e47a4585 consultada por usuario undefined
+2025-01-19T20:52:32.232Z [INFO]: Usuario alan.266@hotmail.com inició sesión
+2025-01-19T20:56:41.011Z [INFO]: Usuario alanromero.opx@gmail.com inició sesión con Google
+2025-01-19T20:56:42.440Z [INFO]: Solicitud 678d0fa3fdde5c326db354ae consultada por usuario undefined
+2025-01-19T21:06:44.694Z [INFO]: Usuario alan.266@hotmail.com inició sesión
+2025-01-19T21:06:47.118Z [INFO]: Solicitud 678c28767fc311b7b0dc02a9 consultada por usuario undefined
+2025-01-19T21:07:21.447Z [INFO]: Usuario alanromero.opx@gmail.com inició sesión con Google
+2025-01-19T21:07:43.796Z [INFO]: Usuario jenmy_2009@hotmail.com inició sesión
+2025-01-19T21:08:44.100Z [INFO]: Nueva solicitud creada: 9C903E por usuario 4ZEkOnz5RzfCJySrtDF5wY9FYmr1
+2025-01-19T21:08:46.422Z [INFO]: Correo de confirmación enviado para solicitud 9C903E
+2025-01-19T21:08:48.239Z [INFO]: Notificación de nueva solicitud enviada al administrador para solicitud 9C903E
+2025-01-19T21:08:59.491Z [INFO]: Usuario taxes247.help@gmail.com inició sesión con Google
+2025-01-19T21:09:08.646Z [INFO]: Nota agregada a solicitud 678d69dbebfecdaff98b3118 por admin taxes247.help@gmail.com: "Nota"
+2025-01-19T21:09:24.609Z [INFO]: Usuario jenmy_2009@hotmail.com inició sesión
+2025-01-19T21:09:26.209Z [INFO]: Solicitud 678d69dbebfecdaff98b3118 consultada por usuario undefined
+2025-01-19T21:11:21.238Z [INFO]: Usuario taxes247.help@gmail.com inició sesión con Google
+2025-01-19T21:15:35.496Z [INFO]: Usuario jenmy_2009@hotmail.com inició sesión
+2025-01-19T21:16:00.883Z [INFO]: Nueva solicitud creada: 970AF6 por usuario 4ZEkOnz5RzfCJySrtDF5wY9FYmr1
+2025-01-19T21:16:02.164Z [INFO]: Correo de confirmación enviado para solicitud 970AF6
+2025-01-19T21:16:03.916Z [INFO]: Notificación de nueva solicitud enviada al administrador para solicitud 970AF6
+2025-01-19T21:16:13.609Z [INFO]: Usuario taxes247.help@gmail.com inició sesión con Google
+2025-01-19T21:16:22.522Z [INFO]: Nota agregada a solicitud 678d6b90f15c981ef5ba1ba1 por admin taxes247.help@gmail.com: "asasas"
+2025-01-19T21:16:30.800Z [INFO]: Usuario jenmy_2009@hotmail.com inició sesión
+2025-01-19T21:18:31.186Z [INFO]: Usuario jenmy_2009@hotmail.com inició sesión
+2025-01-19T21:18:32.545Z [ERROR]: Error al obtener detalles de la solicitud 678d6b90f15c981ef5ba1ba1: maskSSN is not defined
+2025-01-19T21:18:32.646Z [ERROR]: Error al obtener detalles de la solicitud 678d6b90f15c981ef5ba1ba1: maskSSN is not defined
+2025-01-19T21:19:11.569Z [INFO]: Nueva solicitud creada: EC3C57 por usuario 4ZEkOnz5RzfCJySrtDF5wY9FYmr1
+2025-01-19T21:19:13.636Z [INFO]: Correo de confirmación enviado para solicitud EC3C57
+2025-01-19T21:19:15.811Z [INFO]: Notificación de nueva solicitud enviada al administrador para solicitud EC3C57
+2025-01-19T21:19:22.283Z [ERROR]: Error al obtener detalles de la solicitud 678d6c4e96cc40900f2d8a6d: maskSSN is not defined
+2025-01-19T21:19:22.384Z [ERROR]: Error al obtener detalles de la solicitud 678d6c4e96cc40900f2d8a6d: maskSSN is not defined
+2025-01-19T21:19:24.755Z [ERROR]: Error al obtener detalles de la solicitud 678d6c4e96cc40900f2d8a6d: maskSSN is not defined
+2025-01-19T21:19:24.857Z [ERROR]: Error al obtener detalles de la solicitud 678d6c4e96cc40900f2d8a6d: maskSSN is not defined
+2025-01-19T21:21:06.322Z [INFO]: Usuario taxes247.help@gmail.com inició sesión con Google
+2025-01-19T21:21:17.499Z [INFO]: Nota agregada a solicitud 678d6c4e96cc40900f2d8a6d por admin taxes247.help@gmail.com: "dsdsdsd"
+2025-01-19T21:21:23.281Z [INFO]: Estado de solicitud 678d6c4e96cc40900f2d8a6d actualizado a 'En proceso con el IRS' por admin taxes247.help@gmail.com
+2025-01-19T21:21:34.214Z [INFO]: Usuario jenmy_2009@hotmail.com inició sesión
