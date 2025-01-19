@@ -179,18 +179,31 @@ router.get("/user/:userId", verifyToken, getLimiter, async (req, res) => {
       return res.status(400).json({ message: "El userId es obligatorio." });
     }
 
-    // Consultar solicitudes activas (isDeleted: false)
+    // Verificar cache en Redis
+    const cachedData = await redisClient.get(`requests:${userId}`);
+    if (cachedData) {
+      return res.status(200).json(JSON.parse(cachedData));
+    }
+
+    // Si no está en cache, consultar solicitudes activas
     const requests = await Request.find({ userId, isDeleted: false });
 
-    // Devolver tanto las solicitudes como los status steps del modelo
     const responseData = {
       requests: requests,
-      statusSteps: statusSteps, // Now using the imported statusSteps
+      statusSteps: statusSteps,
+      timestamp: Date.now(),
     };
+
+    // Guardar en Redis por 15 minutos
+    await redisClient.setEx(
+      `requests:${userId}`,
+      900, // 15 minutos
+      JSON.stringify(responseData)
+    );
 
     res.status(200).json(responseData);
   } catch (error) {
-    console.error("Error al obtener solicitudes:", error);
+    logger.error(`Error al obtener solicitudes para usuario ${userId}:`, error);
     res.status(500).json({
       message: "Error al obtener las solicitudes.",
       error: error.message,
