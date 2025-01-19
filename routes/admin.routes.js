@@ -1,6 +1,8 @@
 const express = require("express");
 const rateLimit = require("express-rate-limit");
+const verifyToken = require("../middlewares/verifyToken");
 const router = express.Router();
+const { getStatistics } = require("../controllers/statisticsController");
 const { verifyAdmin } = require("../middlewares/authMiddleware");
 const User = require("../models/User");
 const {
@@ -51,5 +53,13 @@ router.get("/requests", getAllRequests);
 router.put("/requests/:id/status", updateRequestStatus);
 router.post("/requests/:id/notes", addAdminNote);
 router.delete("/requests/:id", deleteRequest);
+
+// Ruta de estadísticas
+router.get(
+  "/statistics",
+  verifyToken, // Verificar que el usuario está autenticado
+  verifyAdmin, // Verificar que es un administrador
+  getStatistics // Controlador de estadísticas
+);
 
 module.exports = router;
