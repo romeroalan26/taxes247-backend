@@ -145,11 +145,113 @@ router.post("/register", registerLimiter, async (req, res) => {
       to: email,
       subject: "Activa tu cuenta en Taxes247",
       html: `
-        <p>Hola ${name},</p>
-        <p>Gracias por registrarte en Taxes247. Por favor, activa tu cuenta haciendo clic en el siguiente enlace:</p>
-        <a href="${activationLink}" target="_blank">${activationLink}</a>
-        <p>Este enlace expirará en 24 horas.</p>
-        <p>Si no fuiste tú quien creó esta cuenta, puedes ignorar este mensaje.</p>
+        <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activa tu cuenta en Taxes247</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+        }
+        .header {
+            background-color: #DC2626;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .content {
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #DC2626;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .button:hover {
+            background-color: #B91C1C;
+        }
+        .footer {
+            text-align: center;
+            padding-top: 20px;
+            color: #666666;
+            font-size: 12px;
+        }
+        .divider {
+            border-top: 1px solid #eeeeee;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #FEF3C7;
+            border-left: 4px solid #F59E0B;
+            padding: 10px;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #92400E;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">Taxes247</div>
+            <div>Tu solución en impuestos</div>
+        </div>
+        <div class="content">
+            <h2>¡Hola ${name}!</h2>
+            <p>Gracias por registrarte en Taxes247. Estamos emocionados de tenerte como parte de nuestra comunidad.</p>
+            
+            <p>Para comenzar a usar nuestros servicios, por favor activa tu cuenta haciendo clic en el botón de abajo:</p>
+            
+            <div style="text-align: center;">
+                <a href="${activationLink}" class="button" target="_blank">Activar mi cuenta</a>
+            </div>
+
+            <div class="warning">
+                ⚠️ Este enlace expirará en 24 horas por razones de seguridad.
+            </div>
+
+            <div class="divider"></div>
+
+            <p>Si el botón no funciona, también puedes copiar y pegar el siguiente enlace en tu navegador:</p>
+            <p style="word-break: break-all; font-size: 14px; color: #4B5563;">${activationLink}</p>
+
+            <div class="divider"></div>
+
+            <p style="color: #666666; font-size: 14px;">Si no creaste esta cuenta, puedes ignorar este mensaje de forma segura.</p>
+        </div>
+        <div class="footer">
+            <p>© 2024 Taxes247. Todos los derechos reservados.</p>
+            <p>Este es un correo automático, por favor no respondas a este mensaje.</p>
+        </div>
+    </div>
+</body>
+</html>
       `,
     });
 
