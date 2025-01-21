@@ -435,3 +435,22 @@
 2025-01-19T23:09:24.367Z [INFO]: Usuario alan.266@hotmail.com inició sesión
 2025-01-19T23:10:41.374Z [INFO]: Usuario alan.266@hotmail.com inició sesión
 2025-01-19T23:21:43.711Z [INFO]: Usuario alan.266@hotmail.com inició sesión
+2025-01-20T05:13:39.888Z [INFO]: Estado de solicitud 678dbf65856234600f368556 actualizado a 'Aprobada' por admin taxes247.help@gmail.com
+2025-01-20T05:28:46.446Z [INFO]: Usuario taxes247.help@gmail.com inició sesión con Google
+2025-01-20T05:29:03.679Z [INFO]: Estado de solicitud 678dbf65856234600f368556 actualizado a 'Pago programado' por admin taxes247.help@gmail.com
+2025-01-21T17:37:28.054Z [INFO]: Usuario alan.266@hotmail.com inició sesión
+2025-01-21T17:38:18.867Z [INFO]: Nuevo usuario registrado: alan.266@hotmail.com
+2025-01-21T17:39:04.018Z [INFO]: Usuario alan.266@hotmail.com activó su cuenta
+2025-01-21T17:39:04.077Z [INFO]: Usuario alan.266@hotmail.com activó su cuenta
+2025-01-21T17:39:17.070Z [INFO]: Usuario alan.266@hotmail.com inició sesión
+2025-01-21T17:39:38.445Z [INFO]: Nueva solicitud creada: 2DB33A por usuario kP8VKVakyBg66GWTVQFK6OtOH4H2
+2025-01-21T17:39:39.710Z [INFO]: Correo de confirmación enviado para solicitud 2DB33A
+2025-01-21T17:39:41.052Z [INFO]: Notificación de nueva solicitud enviada al administrador para solicitud 2DB33A
+2025-01-21T17:40:31.334Z [INFO]: Usuario taxes247.help@gmail.com inició sesión con Google
+2025-01-21T17:40:42.220Z [INFO]: Estado de solicitud 678fdbda82b64ece07c1d55b actualizado a 'Aprobada' por admin taxes247.help@gmail.com
+2025-01-21T17:45:47.609Z [INFO]: Estado de solicitud 678fdbda82b64ece07c1d55b actualizado a 'Pago programado' por admin taxes247.help@gmail.com
+2025-01-21T17:50:41.530Z [INFO]: Estado de solicitud 678fdbda82b64ece07c1d55b actualizado a 'En revisión' por admin taxes247.help@gmail.com
+2025-01-21T17:53:04.508Z [INFO]: Estado de solicitud 678fdbda82b64ece07c1d55b actualizado a 'En proceso con el IRS' por admin taxes247.help@gmail.com
+2025-01-21T17:54:57.857Z [INFO]: Estado de solicitud 678fdbda82b64ece07c1d55b actualizado a 'Recibido' por admin taxes247.help@gmail.com
+2025-01-21T17:57:07.178Z [INFO]: Estado de solicitud 678fdbda82b64ece07c1d55b actualizado a 'Aprobada' por admin taxes247.help@gmail.com
+2025-01-21T18:03:27.305Z [INFO]: Estado de solicitud 678fdbda82b64ece07c1d55b actualizado a 'Deposito enviado' por admin taxes247.help@gmail.com
