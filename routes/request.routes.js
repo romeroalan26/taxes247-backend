@@ -14,6 +14,11 @@ const redisClient = require("../config/cacheConfig");
 const verifyToken = require("../middlewares/verifyToken");
 const logger = require("../config/logger");
 
+// Ruta pública para verificar el estado del servidor
+router.get("/ping", (req, res) => {
+  res.json({ message: "pong desde taxes247-backend" });
+});
+
 // Configurar multer para manejar FormData
 const storage = multer.memoryStorage();
 const upload = multer({
